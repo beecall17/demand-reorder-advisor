@@ -1,0 +1,35 @@
+# Cline rules — demand-reorder-advisor
+
+## Project
+Single-agent (v1) demand forecasting + policy/inventory verification system for
+a synthetic retail company. Full context: see docs/Problem_brief.md before
+writing any code — it defines what's in scope and what's explicitly deferred.
+
+## What Cline should do
+- Write boilerplate: API clients, parsers, CRUD/DB glue, test scaffolding,
+  FastAPI/MCP server plumbing, config loading.
+- Follow the pattern notes in skills/ for the relevant area before writing new
+  code in it — read the matching skills/*.md file first.
+
+## What Cline should NOT do
+- Do not write the agent's reasoning/prompt logic (system prompts, tool
+  selection logic, critique logic) unsupervised — draft it, but every prompt
+  gets reviewed line by line before it's kept.
+- Do not add a new Python dependency without it being added to pyproject.toml
+  in the same change.
+- Do not invent business rules. Every number (thresholds, lead times, safety
+  stock formula) must trace back to one of the 7 policy PDFs in
+  data/policy_docs/ or docs/Problem_brief.md.
+
+## Conventions
+- Python 3.11+, type hints on every function signature.
+- All structured LLM outputs are Pydantic models, validated via instructor —
+  never parse raw JSON strings by hand.
+- All LLM calls go through the single modular client in
+  src/demand_advisor/llm_client.py (litellm-backed) — never call a provider
+  SDK directly.
+- Secrets only via .env / pydantic-settings — never hardcoded, never printed
+  in logs.
+- Every new tool function gets a test in tests/ in the same change.
+- Every non-trivial design decision gets a short ADR in docs/adr/ using
+  docs/adr/template.md — copy the template, don't write from scratch.

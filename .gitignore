@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+models/*.pkl
+models/*.joblib
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+Problem_brief_2.md
