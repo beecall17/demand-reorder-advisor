@@ -10,7 +10,5 @@ shelf-space limits). No single source of truth combines them, so decisions are
 slow, inconsistent, and occasionally violate policy simply because nobody
 re-read the policy doc that day.
 
-Nothing in this statement names a technique. Forecasting models, agents, RAG,
-and orchestration are all *choices* made below — never assume one before
-testing whether it's needed.
+
 
