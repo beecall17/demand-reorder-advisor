@@ -13,3 +13,4 @@ models/*.joblib
 .ruff_cache/
 .ipynb_checkpoints/
 Problem_brief_2.md
+models/prophet
