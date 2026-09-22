@@ -24,23 +24,23 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 MODEL_DIR = REPO_ROOT / "models" / "prophet"
 
 
-# def to_prophet_frame(df: pd.DataFrame, store: int, item: int) -> pd.DataFrame:
-#     """Preprocessing step -- the 'feature pipeline' half of the artifact
-#     pair. Must be reused identically at inference time; never re-derive
-#     this by hand elsewhere.
-#     """
-#     series = df[(df["store"] == store) & (df["item"] == item)]
-#     out = series[["date", "sales"]].rename(columns={"date": "ds", "sales": "y"})
-#     return out.sort_values("ds").reset_index(drop=True)
+def to_prophet_frame(df: pd.DataFrame, store: int, item: int) -> pd.DataFrame:
+    """Preprocessing step -- the 'feature pipeline' half of the artifact
+    pair. Must be reused identically at inference time; never re-derive
+    this by hand elsewhere.
+    """
+    series = df[(df["store"] == store) & (df["item"] == item)]
+    out = series[["date", "sales"]].rename(columns={"date": "ds", "sales": "y"})
+    return out.sort_values("ds").reset_index(drop=True)
 
 
 def train(prophet_df: pd.DataFrame, **prophet_kwargs) -> Prophet:
-    defaults = dict(
-        yearly_seasonality=True,
-        weekly_seasonality=True,
-        daily_seasonality=False,
-        seasonality_mode="multiplicative",
-    )
+    defaults = {
+        "yearly_seasonality": True,
+        "weekly_seasonality": True,
+        "daily_seasonality": False,
+        "seasonality_mode": "multiplicative",
+    }
     defaults.update(prophet_kwargs)
     model = Prophet(**defaults)
     model.fit(prophet_df)
@@ -97,63 +97,26 @@ def load_model(store: int, item: int, path: Path = MODEL_DIR) -> Prophet:
     return model_from_json(fp.read_text())
 
 
-# def batch_train_all(df: pd.DataFrame, path: Path = MODEL_DIR, **prophet_kwargs) -> pd.DataFrame:
-#     """Trains and saves one model per (store, item) combination on the
-#     FULL history (no holdout) -- the backtest for accuracy reporting is a
-#     separate step with its own held-out window. Returns a small summary
-#     frame, not the fitted models themselves, to keep memory bounded while
-#     training 500 series.
-#     """
-#     rows = []
-#     combos = df[["store", "item"]].drop_duplicates().itertuples(index=False)
-#     for store, item in combos:
-#         # 1. Filter data for the current store and item combination
-#         sub_df = df[(df["store"] == store) & (df["item"] == item)].copy()
-#         sub_df = sub_df.rename(columns={"date": "ds", "sales": "y"})
-
-#         # 2. Train and save using the filtered subset
-#         model = train(sub_df, **prophet_kwargs)
-#         fp = save_model(model, store, item, path)
-
-#         # 3. Record metrics based on the specific series subset
-#         rows.append(
-#             {
-#                 "store": store,
-#                 "item": item,
-#                 "n_days": len(sub_df),
-#                 "mean_daily_sales": sub_df["y"].mean() if "y" in sub_df.columns else None,
-#                 "artifact": str(fp),
-#             }
-#         )
-
-#     return pd.DataFrame(rows)
-
-
 def batch_train_all(df: pd.DataFrame, path: Path = MODEL_DIR, **prophet_kwargs) -> pd.DataFrame:
     """Trains and saves one model per (store, item) combination on the
-    FULL history (no holdout). Returns a summary dataframe.
+    FULL history (no holdout) -- the backtest for accuracy reporting is a
+    separate step with its own held-out window. Returns a small summary
+    frame, not the fitted models themselves, to keep memory bounded while
+    training 500 series.
     """
     rows = []
     combos = df[["store", "item"]].drop_duplicates().itertuples(index=False)
-
     for store, item in combos:
-        # 1. Filter data for the current store and item combination
-        # (Assuming df already has 'ds' and 'y' columns)
-        sub_df = df[(df["store"] == store) & (df["item"] == item)].copy()
-
-        # 2. Train and save using the filtered subset
-        model = train(sub_df, **prophet_kwargs)
+        pdf = to_prophet_frame(df, store, item)
+        model = train(pdf, **prophet_kwargs)
         fp = save_model(model, store, item, path)
-
-        # 3. Record metrics based on the specific series subset
         rows.append(
             {
                 "store": store,
                 "item": item,
-                "n_days": len(sub_df),
-                "mean_daily_sales": sub_df["y"].mean() if "y" in sub_df.columns else None,
+                "n_days": len(pdf),
+                "mean_daily_sales": pdf["y"].mean(),
                 "artifact": str(fp),
             }
         )
-
     return pd.DataFrame(rows)
