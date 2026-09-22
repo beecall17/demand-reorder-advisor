@@ -14,3 +14,10 @@ models/*.joblib
 .ipynb_checkpoints/
 Problem_brief_2.md
 models/prophet
+mlflow.db
+mlartifacts/
+mlruns_tmp_artifacts/
+models/*.joblib
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
