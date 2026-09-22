@@ -20,6 +20,7 @@ from prophet.serialize import model_from_json, model_to_json
 # process cwd -- see the same note in data.py. Notebooks run with cwd set
 # to their own folder, which would otherwise silently nest this under
 # notebooks/models/.
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODEL_DIR = REPO_ROOT / "models" / "prophet"
 
