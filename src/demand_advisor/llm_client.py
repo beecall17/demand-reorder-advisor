@@ -3,6 +3,7 @@
 One Router instance, constructed once, imported everywhere else -- agent
 code never calls a provider SDK or even bare litellm.completion() directly.
 """
+
 import os
 
 import litellm
@@ -46,8 +47,8 @@ def get_router() -> Router:
             model_list=MODEL_LIST,
             fallbacks=[{"primary": ["fallback"]}],
             num_retries=2,
-            retry_after=2,          # seconds between retries
-            allowed_fails=1,        # trip to fallback after 1 failure, don't wait for a full outage
+            retry_after=2,  # seconds between retries
+            allowed_fails=1,  # trip to fallback after 1 failure, don't wait for a full outage
         )
-        litellm.cache = litellm.Cache()   # in-memory response cache, on by default
+        litellm.cache = litellm.Cache()  # in-memory response cache, on by default
     return _router

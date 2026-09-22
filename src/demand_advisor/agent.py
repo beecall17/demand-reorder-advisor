@@ -16,6 +16,7 @@ replaced with a real call in its own step:
   - _get_inventory_context  -> MCP inventory server (not yet built)
   - _get_policy_context     -> pgvector RAG retrieval (not yet built)
 """
+
 import instructor
 
 from .llm_client import get_router
@@ -37,6 +38,7 @@ def _get_client() -> instructor.Instructor:
 
 
 # --- stub tool context -------------------------------------------------
+
 
 def _get_forecast_context(store_id: int, item_id: int) -> str:
     return "STUB forecast: predicted demand next 7 days = [18, 20, 19, 22, 25, 30, 28] units/day"
@@ -72,13 +74,16 @@ given). List any policy_flags that apply, even if none block the order.
 """
 
 
-def recommend_reorder(store_id: int, item_id: int, mock_response: str | None = None) -> ReorderRecommendation:
+def recommend_reorder(
+    store_id: int, item_id: int, mock_response: str | None = None
+) -> ReorderRecommendation:
     forecast_ctx = _get_forecast_context(store_id, item_id)
     inventory_ctx = _get_inventory_context(store_id, item_id)
     policy_ctx = _get_policy_context(store_id, item_id)
 
     prompt = PROMPT_TEMPLATE.format(
-        store_id=store_id, item_id=item_id,
+        store_id=store_id,
+        item_id=item_id,
         forecast_context=forecast_ctx,
         inventory_context=inventory_ctx,
         policy_context=policy_ctx,
