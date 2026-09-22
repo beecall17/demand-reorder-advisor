@@ -13,14 +13,14 @@ MODEL_LIST = [
     {
         "model_name": "primary",
         "litellm_params": {
-            "model": "groq/llama-3.3-70b-versatile",
+            "model": "groq/llama-3.3-70b-specdec",
             "api_key": os.getenv("GROQ_API_KEY"),
         },
     },
     {
         "model_name": "fallback",
         "litellm_params": {
-            "model": "gemini/gemini-2.5-flash",
+            "model": "gemini/gemini-3.5-flash",
             "api_key": os.getenv("GOOGLE_API_KEY"),
         },
     },
