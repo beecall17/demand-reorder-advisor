@@ -23,6 +23,7 @@ dependencies = [
     "mlflow>=2.16",
     "jupyter>=1.1.1",
     "tdqm>=0.0.1",
+    "langfuse<3.0.0",
 ]
 
 [project.optional-dependencies]
@@ -34,3 +35,8 @@ dev = [
 
 [tool.ruff]
 line-length = 100
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
